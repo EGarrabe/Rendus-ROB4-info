@@ -1,4 +1,6 @@
-# POUR UTILISER LE CODE, VEUILLEZ ALLER A LA FIN DU CODE POUR CHOISIR QUELLE PARTIE DU TP VOUS VOULEZ TESTER
+#VEUILLEZ DECOMMENTER LES DERNIÈRE LIGNES POUR TESTER LES DIFFÉRENTES FONCTIONS
+#AYOUB HADJAB - MATHYS CLAUDEL - CLARENCE PFISTER
+
 
 import math
 import matplotlib.pyplot as plt
@@ -10,7 +12,7 @@ class Point:
         self.y = y
         self.color = color
 
-    def display_info(self):
+    def afficher_info(self):
         print(f"Coordonnées : ({self.x}, {self.y})")
         print(f"Couleur : {self.color}")
 
@@ -36,7 +38,7 @@ class Vecteur:
         self.y = y
         self.color = color
 
-    def display_info(self):
+    def afficher_info(self):
         print(f"Coordonnées : ({self.x}, {self.y})")
         print(f"Couleur : {self.color}")
 
@@ -69,11 +71,11 @@ class Triangle:
         self.p3 = p3
         self.color = color
 
-    def display_info(self):
+    def afficher_info(self):
         print("Triangle :")
-        self.p1.display_info()
-        self.p2.display_info()
-        self.p3.display_info()
+        self.p1.afficher_info()
+        self.p2.afficher_info()
+        self.p3.afficher_info()
         print(f"Couleur : {self.color}")
 
     def dessiner(self):
@@ -104,22 +106,22 @@ def partie_vecteur():
     vecteur2 = Vecteur(3, 4, "blue")
 
     print("Vecteur 1 :")
-    vecteur1.display_info()
+    vecteur1.afficher_info()
 
     print("\nVecteur 2 :")
-    vecteur2.display_info()
+    vecteur2.afficher_info()
 
     vecteur_add = vecteur1 + vecteur2
     print("\nRésultat de l'addition :")
-    vecteur_add.display_info()
+    vecteur_add.afficher_info()
 
     vecteur_mul = vecteur1 * 2
     print("\nMultiplication par un scalaire :")
-    vecteur_mul.display_info()
+    vecteur_mul.afficher_info()
 
     vecteur_div = vecteur2 / 2
     print("\nDivision du vecteur 2 par un scalaire :")
-    vecteur_div.display_info()
+    vecteur_div.afficher_info()
 
     plt.figure(figsize=(5, 5))
     vecteur1.dessiner()
@@ -135,7 +137,7 @@ def partie_triangle_rotation():
 
     triangle = Triangle(point1, point2, point3, "cyan")
 
-    triangle.display_info()
+    triangle.afficher_info()
 
     plt.figure(figsize=(5, 5))
     triangle.dessiner()
@@ -188,4 +190,4 @@ def main(partie):
 
 #main(1)  # Décommentez pour tester la première partie
 #main(2)  # Décommentez pour tester la deuxième partie
-main(3)  # Décommentez pour tester la troisième partie
+#main(3)  # Décommentez pour tester la troisième partie
