@@ -1,1 +1,166 @@
-class Point() :
+"""
+TP1 Introduction à Python et à la programmation orientée objet
+ABDELKAMEL Mehdy
+ANASTASOPOULOU Evanthia Virginia
+"""
+import math
+import matplotlib.pyplot as plt
+
+# Creation de la classe Point
+class Point() : 
+    """ Classe permettant de créer un point en 2D en lui donnant une couleur """
+
+    #Initialisation des attributs de la classe
+    def __init__(self, x = 0, y = 0, couleur = "noir") -> None:
+        self.x = x
+        self.y = y
+        self.couleur = couleur
+
+    def afficher(self) :
+        """Fonction d'affichage des coordonnees d'un point"""
+        print("(",self.x, ":", self.y,")", "est", self.couleur)
+
+    def rotation_point(self, alpha : int) :
+        """ Fait tourner un point autour de l'origine en fonction d'un angle alpha (en rad) """
+        alpha_rad = math.radians(alpha)
+
+        # On trouve les nouveaux coordonnees du point a partir de la matrice de rotation (on multiplie la matrice de rotation avec nos coordonnees initiales)
+        x_final = self.x * math.cos(alpha_rad) - self.y * math.sin(alpha_rad)
+        y_final = self.x * math.sin(alpha_rad) + self.y * math.cos(alpha_rad)
+
+        # On met a jour les coordonnees du point
+        self.x = x_final
+        self.y = y_final
+    
+    def translation_point(self, vecteur) :
+        self.x = self.x + vecteur.x
+        self.y = self.y + vecteur.y
+
+
+# Creation de la classe Vecteur
+class Vecteur(): 
+    """Classe qui crée un vecteur à partir de x et y, et qui lui donne une couleur"""
+
+    # Initialisation des attributs de la classe
+    def __init__(self, x : int, y : int, couleur : str) -> None:
+        self.x = x
+        self.y = y
+        self.couleur = couleur
+
+    # Surcharge d'opérateur en utilisant des méthodes spéciales
+    def __add__(self, point) :
+        """Surcharge de l'opérateur + pour additionner deux vecteurs"""
+        return Vecteur(self.x + point.x, self.y + point.y, self.couleur) # On garde la couleur du premier vecteur
+
+    def __sub__(self, point) :
+        """Surcharge de l'opérateur - pour soustraire deux vecteurs"""
+        return Vecteur(self.x - point.x, self.y - point.y, self.couleur) # Pareil
+
+    def __truediv__(self, scalaire) :
+        """Surcharge de l'opérateur / pour diviser un vecteur par un scalaire"""
+        if (scalaire != 0):
+            return Vecteur(self.x / scalaire, self.y / scalaire, self.couleur)
+        return "Erreur !! met un scalaire différent de 0 stp !"
+
+    def __mul__(self, scalaire) :
+        """Surcharge de l'opérateur * pour diviser un vecteur par un scalaire"""
+        return Vecteur(self.x * scalaire, self.y * scalaire, self.couleur)
+
+    def afficher(self):
+        """Fonction d'affichage des coordonnees du vecteur"""
+        print("(",self.x, ":", self.y,")", "est", self.couleur)
+
+    def dessiner(self):
+        """Fonction pour dessiner le vecteur avec matplotlib"""
+        plt.scatter(self.x, self.y, color=self.couleur)  # On utilise scatter pour dessiner un point
+        plt.xlim( -50, 50)  # Limites de l'axe x (+- 10 d'après x)
+        plt.ylim(- 50, 50)  # Limites de l'axe y (+- 10 d'après y)
+        plt.xlabel('Axe X')
+        plt.ylabel('Axe Y')
+        plt.title(f'Affiche du Point ({self.x}, {self.y}) en {self.couleur} !')
+        plt.grid(True)  # Ajout de la grille
+        plt.show()  # Affichage du graphe
+
+
+# Creation de la classe Triangle
+class Triangle() :
+    """ Classe permettant de créer un triangle à partir de trois points """
+
+    # Initialisation des attributs de la classe Triangle
+    def __init__(self, p1 : Point, p2 : Point, p3 : Point, couleur : str) -> None:
+        self.p1 = p1
+        self.p2 = p2
+        self.p3 = p3
+        self.couleur = couleur
+
+    def tourne_triangle(self, alpha : int) :
+        """Fait tourner le triangle autour de l'origine en fonction d'un angle alpha (en rad)"""
+        self.p1.rotation_point(alpha)
+        self.p2.rotation_point(alpha)
+        self.p3.rotation_point(alpha)
+
+    def afficher_coordonnees(self) : 
+        """Affiche les coordonnées des trois points du triangle"""
+        print(f"Coordonnées du point 1 : ({self.p1.x}, {self.p1.y})")
+        print(f"Coordonnées du point 2 : ({self.p2.x}, {self.p2.y})")
+        print(f"Coordonnées du point 3 : ({self.p3.x}, {self.p3.y})")
+
+    def translation(self, vecteur : Vecteur) :
+        """Fonction pour effectuer une translation du triangle"""
+        self.p1.translation_point(vecteur)
+        self.p2.translation_point(vecteur)
+        self.p3.translation_point(vecteur)
+        
+    def dessiner(self) :
+        """ Affiche le triangle en reliant les trois sommets """
+        # On crée une liste des coordonnées x et y des sommets
+        x_coords = [self.p1.x, self.p2.x, self.p3.x, self.p1.x]  # On relie le dernier point au premier
+        y_coords = [self.p1.y, self.p2.y, self.p3.y, self.p1.y]
+
+        # Dessiner le triangle en reliant les sommets
+        plt.plot(x_coords, y_coords, color=self.couleur)
+        
+        # Mettre en évidence les sommets
+        plt.scatter([self.p1.x, self.p2.x, self.p3.x], [self.p1.y, self.p2.y, self.p3.y], color=self.couleur)
+
+        # Configurations du graphe
+        plt.xlim(-10, 10)
+        plt.ylim(-10, 10)
+        plt.xlabel('Axe X')
+        plt.ylabel('Axe Y')
+        plt.title(f"Triangle de couleur {self.couleur}")
+        plt.grid(True)
+
+
+    
+if __name__ == "__main__":
+    # Première partie 
+    p1 = Vecteur(2, 5, 'green')
+    Vecteur.afficher(p1)
+    p2 = Vecteur(6, 8, 'yellow')
+    Vecteur.afficher(p2)
+    p3 = p1 + p2
+    Vecteur.afficher(p3)
+    p4 = p1 - p2
+    Vecteur.afficher(p4)
+    p5 = p1 / 8
+    Vecteur.afficher(p5) 
+    p6 = p2 * 4
+    Vecteur.afficher(p6) 
+    Vecteur.dessiner(p3)
+
+    # Deuxième partie 
+    P1 = Point(3, 7)
+    P2 = Point(5, 3)
+    P3 = Point(-2, 6)
+    tr = Triangle(P1, P2, P3, "green")
+    vec_t = Vecteur(1, 2, "blue")
+    tr.afficher_coordonnees()
+    tr.dessiner()
+    tr.tourne_triangle(180)
+    tr.afficher_coordonnees()
+    tr.dessiner()
+    tr.translation(vec_t)
+    tr.afficher_coordonnees()
+    tr.dessiner()
+    plt.show()
