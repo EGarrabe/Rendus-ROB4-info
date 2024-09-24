@@ -1,1 +1,2 @@
-Fatah et Nacim vous saluent chaleureuseent
+Voir le fichier : tp1_fatah_nacim.py
+
