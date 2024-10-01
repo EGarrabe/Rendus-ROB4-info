@@ -1,0 +1,184 @@
+"""
+TP2 Héritage et Polymorphism
+ABDELKAMEL Mehdy
+ANASTASOPOULOU Evanthia Virginia
+"""
+
+import random
+from multipledispatch import dispatch
+
+# Classe Carte
+class Carte() :
+    """Classe abstraite commune."""
+    def play(self) :
+        """Méthode abstraite."""
+        pass 
+
+class CarteNormale(Carte) :
+    """Une carte normale qui donne au joueur un nombre aléatoire de points entre 1 et 10."""
+    def __init__(self) :
+        """Initialise la carte normale avec des points aléatoires entre 1 et 10."""
+        self.points = random.randint(1, 10)
+
+class CarteBonus(Carte) :
+    """Une carte bonus qui double le score du joueur."""
+    def play(self) :
+        """On ne fait rien, ça crée juste la carte"""
+        pass
+
+class CarteMalus(Carte) :
+    """Une carte malus qui réduit le score du joueur de 5 points."""
+    def play(self) :
+        """On ne fait rien, ça crée juste la carte"""
+        pass
+
+class CarteChance(Carte) :
+    """Une carte chance qui ajoute ou enlève un nombre aléatoire de points entre -5 et 15."""
+    def __init__(self) :
+        """Initialise la carte chance avec des points aléatoires entre -5 et 15"""
+        self.points = random.randint(-5, 15)
+
+# Classe Joueur
+class Joueur :
+    """Classe qui contient les informations principals d'un joueur ainsi que la methode qui prend en parametre une carte et applique son effet au score du joueur"""
+    def __init__(self, nom: str, score: int = 0):
+        self.nom = nom
+        self.score = score
+
+    @dispatch(CarteNormale)
+    def jouerCarte(self, carte):
+        """Méthode qui permet de jouer la carte Normale en attribuant ses effets sur le score du joueur"""
+        self.score = self.score + carte.points
+        print("Carte Normale : Ajoute ", carte.points," points")
+        print("Score actuel du Joueur", self.nom," : ", self.score)
+
+    @dispatch(CarteBonus)
+    def jouerCarte(self, carte) :
+        """Méthode qui permet de jouer la carte Bonus en attribuant ses effets sur le score du joueur"""
+        self.score = self.score * 2
+        print("Carte Bonus : Multiplie le score du joueur par 2")
+        print("Score actuel du Joueur", self.nom," : ", self.score)
+
+    @dispatch(CarteMalus)
+    def jouerCarte(self, carte) :
+        """Méthode qui permet de jouer la carte Malus en attribuant ses effets sur le score du joueur"""
+        self.score = self.score - 5
+        print("Carte Malus : Perd 5 points")
+        print("Score actuel du Joueur", self.nom," : ", self.score)
+
+    @dispatch(CarteChance)
+    def jouerCarte(self, carte):
+        """Méthode qui permet de jouer la carte Chance en attribuant ses effets sur le score du joueur"""
+        score = self.score + carte.points
+        print("Carte Chance : Ajoute ", carte.points," points")
+        print("Score actuel du Joueur", self.nom," : ", score)
+        self.score = score
+
+
+# Classe Tricheur
+class Tricheur(Joueur) :
+    """Classe héritière du Joueur """
+    @dispatch(CarteNormale)
+    def jouerCarte(self, carte) :
+        super().jouerCarte(carte)
+
+    @dispatch(CarteBonus)
+    def jouerCarte(self, carte) :
+        super().jouerCarte(carte)
+
+    @dispatch(CarteMalus)
+    def jouerCarte(self, carte) :
+        """Méthode qui permet de jouer la carte Malus en n'attribuant pas ses effets sur le score du Tricheur"""
+        print("Carte Malus : Perd 5 points... Eh beh non, c'est un tricheur")
+        print("Score actuel du Tricheur", self.nom," : ", self.score)
+
+    @dispatch(CarteChance)
+    def jouerCarte(self, carte) :
+        super().jouerCarte(carte)
+
+# Fonction pour la creation du deck
+def creer_deck(nbre_normal: int, nbre_bonus: int, nbre_malus: int, nbre_chance: int) :
+    """Fonction qui crée le deck de la partie."""
+    deck = []
+
+    # On ajoute toutes nos Cartes Normales, une par une, au deck
+    for i in range(nbre_normal) :
+        deck.append(CarteNormale())
+
+    # On ajoute toutes nos Cartes Bonus, une par une, au deck
+    for i in range(nbre_bonus) :
+        deck.append(CarteBonus())
+
+    # On ajoute toutes nos Cartes Malus, une par une, au deck
+    for i in range(nbre_malus) :
+        deck.append(CarteMalus())
+
+    # On ajoute toutes nos Cartes Chance, une par une, au deck
+    for i in range(nbre_chance) :
+        deck.append(CarteChance())
+
+    # On mélange le deck
+    random.shuffle(deck)
+    return deck
+
+
+def affichage_deck(deck) :
+    """Fonction qui affiche le deck."""
+    decklist = []
+    l = len(deck)
+
+    for i in range (l) :
+        if type(deck[i]) is CarteNormale :
+            decklist.append("Normale")
+
+        if type(deck[i]) is CarteBonus :
+            decklist.append("Bonus")
+
+        if type(deck[i]) is CarteMalus :
+            decklist.append("Malus")
+
+        if type(deck[i]) is CarteChance :
+            decklist.append("Chance")
+
+def tirage_carte(deck: list):
+    """Fonction de tirage de carte."""
+    l = len(deck)
+    if l :
+        return deck.pop()
+
+def jouer_partie():
+    """Fonction pour jouer une partie du jeu. Chaque partie est indépendante."""
+    # On crée les deux joueurs (on peut les définir soit comme tricheurs, soit comme joueurs)
+    joueur1 = Tricheur("Evinia")    # Ou bien : joueur1 = Joueur("Evinia")
+    joueur2 = Tricheur("Mehdy")
+    nb_tours = 6
+
+    deck = creer_deck(30, 6, 5, 15)
+    affichage_deck(deck)
+
+    # Les joueurs piochent tours à tours pendant un nombre de tour défini
+    i = 0
+    while i != nb_tours :
+        # Permet le tour si le nombre de tours restants est différent de 0
+        if i != nb_tours:
+            i += 1
+            carte_tiree = tirage_carte(deck)
+            print("Tour", i, "de", joueur1.nom)
+            joueur1.jouerCarte(carte_tiree)
+
+            print("\n")
+
+        if i != nb_tours :
+            i += 1
+            carte_tiree = tirage_carte(deck)
+            print("Tour", i, "de", joueur2.nom)
+            joueur2.jouerCarte(carte_tiree)
+
+            print("\n")
+
+    print("Score final de", joueur1.nom, " : ", joueur1.score)
+    print("Score final de", joueur2.nom, " : ", joueur2.score)
+
+
+if __name__ == "__main__":
+    jouer_partie()
