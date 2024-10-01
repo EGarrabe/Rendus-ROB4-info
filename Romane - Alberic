@@ -1,0 +1,113 @@
+"""
+ROMANE - ALBERIC
+Jeu de cartes 
+"""
+from abc import ABC, abstractmethod
+import random
+
+
+class Carte(ABC):
+    """Classe abstraite """
+    @abstractmethod
+    def effet_sur_score(self, joueur):
+        pass
+
+
+class CarteNormale(Carte):
+    """Carte normale, rand(1 à 10)"""
+    def effet_sur_score(self, joueur):
+        point = random.randint(1, 10)
+        joueur.score += point
+        print(f"Effet: carte normale : +{point}")
+
+    def __str__(self):
+        return "Normale"
+
+
+class CarteMalus(Carte):
+    """Carte malus enlevant 5 points"""
+    def effet_sur_score(self, joueur):
+        joueur.score -= 5
+        print("Effet: carte malus: -5")
+
+    def __str__(self):
+        return "Malus"
+
+
+class CarteBonus(Carte):
+    """Carte bonus qui double le score du joueur"""
+    def effet_sur_score(self, joueur):
+        joueur.score *= 2
+        print(f"Effet: carte bonus : {joueur.score // 2}")
+
+    def __str__(self):
+        return "Bonus"
+
+
+class CarteChance(Carte):
+    """Carte chance avec un effet aléatoire sur le score"""
+    def effet_sur_score(self, joueur):
+        point = random.randint(-5, 15)
+        joueur.score += point
+        print(f"Effet: carte chance : {point}")
+
+    def __str__(self):
+        return "Chance"
+
+
+class Joueur:
+    """Classe représentant un joueur avec un nom et un score"""
+    def __init__(self, nom, score=0):
+        self.nom = nom
+        self.score = score
+
+    def jouer_carte(self, carte):
+        """Le joueur joue une carte, et l'effet est appliqué"""
+        carte.effet_sur_score(self)
+        print(f"Score actuel de {self.nom} : {self.score}")
+
+    def affichage(self, carte):
+        """Affiche le type de la carte tirée."""
+        return f"Joueur {self.nom} tire une carte {carte}"
+
+
+class Tricheur(Joueur):
+    """Classe représentant un joueur tricheur qui ignore les malus"""
+    def jouer_carte(self, carte):
+        """Le tricheur applique un effet spécial pour les cartes malus"""
+        if isinstance(carte, CarteMalus):
+            self.score += 5
+            print(f"Tricheur ignore le malus: +5")
+        carte.effet_sur_score(self)
+        print(f"Score actuel de {self.nom} : {self.score}")
+
+
+def creer_deck():
+    """Crée un deck de cartes avec les quantités spécifiées pour chaque type"""
+    deck = []
+    deck.extend([CarteNormale()]*30)
+    deck.extend([CarteBonus()]*6)
+    deck.extend([CarteMalus()]*5)
+    deck.extend([CarteChance()]*15)
+
+    random.shuffle(deck)  # Mélanger le deck avant utilisation
+    return deck
+
+
+def jouer_tour(joueur, deck, tours):
+    """Effectue un certain nombre de tours où le joueur tire des cartes"""
+    for tour in range(1, tours + 1):
+        print(f"\nTour {tour}")
+        carte = deck.pop()
+        print(joueur.affichage(carte))
+        joueur.jouer_carte(carte)
+
+    print(f"\nScore final de {joueur.nom} : {joueur.score}")
+
+
+joueur_actuel = Joueur('J1')
+deck = creer_deck()
+jouer_tour(joueur_actuel, deck, 5)
+
+tricheur_actuel = Tricheur('T1')
+jouer_tour(tricheur_actuel, deck, 5)
